@@ -16,7 +16,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     try {
       const [f, m] = await Promise.all([
         supabase.from('foods').select('id,name,category,emoji,image_url,description').order('name').limit(1000),
-        supabase.from('meals').select('id,eaten_at,preference,notes,portion_amount,portion_unit,meal_items(food_id)').order('eaten_at', { ascending: false }).limit(1000),
+        supabase.from('meals').select('id,eaten_at,meal_type,preference,notes,portion_amount,portion_unit,meal_items(food_id)').order('eaten_at', { ascending: false }).limit(1000),
       ])
       if (f.error) throw f.error
       if (m.error) throw m.error

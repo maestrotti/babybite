@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { Plus } from 'lucide-react'
 import { useStore } from '../lib/store'
 import { dayKey, firstEaten, longDate, timeLabel, whenLabel } from '../lib/meal'
-import { PREF_LABEL } from '../types'
+import { MEAL_TYPE_LABEL, PREF_LABEL } from '../types'
 import { Empty, ErrorBox, FoodImage, Spinner, btnPrimary, card } from '../components/ui'
 
 export default function Home() {
@@ -29,12 +29,12 @@ export default function Home() {
             <div className={`${card} bg-butter`}><div className="text-3xl font-extrabold">{today.length}</div><div>obroka danas</div></div>
             <div className={`${card} bg-blush/60`}><div className="text-3xl font-extrabold">{first.size}</div><div>različitih namirnica probano</div></div>
           </section>
-          {last && <section className={card}><h2 className="font-bold">Posljednji obrok</h2><p className="text-ink/70">{whenLabel(last.eaten_at)}</p><p className="mt-1 font-semibold">{names(last)}</p>{last.preference && <p className="text-sm">{PREF_LABEL[last.preference]}</p>}</section>}
+          {last && <section className={card}><h2 className="font-bold">Posljednji obrok</h2><p className="text-ink/70">{last.meal_type ? `${MEAL_TYPE_LABEL[last.meal_type]}, ` : ''}{whenLabel(last.eaten_at)}</p><p className="mt-1 font-semibold">{names(last)}</p>{last.preference && <p className="text-sm">{PREF_LABEL[last.preference]}</p>}</section>}
           <section className={card}>
             <h2 className="mb-2 font-bold">Današnji obroci</h2>
             {today.length === 0 ? <p className="text-ink/70">Danas još nema zabilježenih obroka.</p> : (
               <ol className="space-y-3 border-l-2 border-sage pl-4">
-                {today.map((m) => <li key={m.id}><div className="text-sm font-semibold text-sagedeep">{timeLabel(new Date(m.eaten_at))}</div>
+                {today.map((m) => <li key={m.id}><div className="text-sm font-semibold text-sagedeep">{m.meal_type ? `${MEAL_TYPE_LABEL[m.meal_type]} · ` : ''}{timeLabel(new Date(m.eaten_at))}</div>
                   <div className="flex flex-wrap gap-1">{m.meal_items.map((i) => { const f = foodMap.get(i.food_id); return f && <FoodImage key={f.id} food={f} small /> })}</div>
                   <div>{names(m)}</div></li>)}
               </ol>

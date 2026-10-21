@@ -1,5 +1,6 @@
 import { useStore } from '../lib/store'
 import { countFoods, dayKey, firstEaten } from '../lib/meal'
+import { MEAL_TYPES, MEAL_TYPE_LABEL } from '../types'
 import { Empty, FoodImage, Spinner, card } from '../components/ui'
 
 export default function Stats() {
@@ -24,6 +25,9 @@ export default function Stats() {
         <div className={`${card} bg-butter`}><div className="text-3xl font-extrabold">{meals.length}</div>obroka ukupno</div>
         <div className={`${card} bg-sky/60`}><div className="text-3xl font-extrabold">{first.size}</div>različitih namirnica</div>
       </div>
+      <section className={card}><h2 className="mb-2 font-bold">Obroci po vrsti</h2>
+        <ul className="grid grid-cols-3 gap-2 text-center">{MEAL_TYPES.map((t) => <li key={t} className="rounded-2xl bg-cream p-3"><div className="text-2xl font-extrabold">{meals.filter((m) => m.meal_type === t).length}</div><div className="text-xs font-bold">{MEAL_TYPE_LABEL[t]}</div></li>)}</ul>
+        {meals.some((m) => !m.meal_type) && <p className="mt-2 text-xs text-ink/60">{meals.filter((m) => !m.meal_type).length} starijih obroka nema oznaku vrste.</p>}</section>
       <section className={card}><h2 className="mb-2 font-bold">Najčešće namirnice</h2>
         <ul className="space-y-2">{top.map(([id, n]) => <li key={id}><div className="flex justify-between text-sm"><span>{foodMap.get(id)?.name}</span><span>{n}</span></div><div className="h-3 rounded-full bg-cream"><div className="h-3 rounded-full bg-sagedeep" style={{ width: `${(n / top[0][1]) * 100}%` }} /></div></li>)}</ul></section>
       <section className={card}><h2 className="mb-2 font-bold">Obroci koji su mu se svidjeli</h2>{chips(liked)}</section>

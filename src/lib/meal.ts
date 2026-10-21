@@ -14,6 +14,7 @@ export function validateMeal(o: { foodIds: string[]; eatenAt: Date; amount?: str
   return null
 }
 
+export const mealTypeByHour = (h: number): 'dorucak' | 'rucak' | 'vecera' => (h < 11 ? 'dorucak' : h < 16 ? 'rucak' : 'vecera')
 export const timeLabel = (d: Date) => `${pad(d.getHours())}:${pad(d.getMinutes())}`
 export const toLocalInput = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${timeLabel(d)}`
 export const dayKey = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`

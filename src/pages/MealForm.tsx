@@ -3,8 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Clock, X } from 'lucide-react'
 import { supabase, errText } from '../lib/supabase'
 import { useStore } from '../lib/store'
-import { toggleFood, toLocalInput, validateMeal, whenLabel } from '../lib/meal'
-import { PREF_LABEL, type Meal, type Pref } from '../types'
+import { mealTypeByHour, toggleFood, toLocalInput, validateMeal, whenLabel } from '../lib/meal'
+import { MEAL_TYPES, MEAL_TYPE_LABEL, PREF_LABEL, type Meal, type MealType, type Pref } from '../types'
 import { FoodPicker } from '../components/FoodPicker'
 import { ErrorBox, FoodImage, Spinner, btnPrimary, card, input, useOnline } from '../components/ui'
 
@@ -26,6 +26,7 @@ function Form({ meal }: { meal?: Meal }) {
   const [mealId] = useState(() => meal?.id ?? crypto.randomUUID())
   const [selected, setSelected] = useState<string[]>(meal?.meal_items.map((i) => i.food_id) ?? [])
   const [eatenAt, setEatenAt] = useState(() => toLocalInput(meal ? new Date(meal.eaten_at) : new Date()))
+  const [mealType, setMealType] = useState<MealType>(meal?.meal_type ?? mealTypeByHour(new Date().getHours()))
   const [pref, setPref] = useState<Pref>(meal?.preference ?? null)
   const [notes, setNotes] = useState(meal?.notes ?? '')
   const [amount, setAmount] = useState(meal?.portion_amount?.toString() ?? '')
@@ -39,11 +40,12 @@ function Form({ meal }: { meal?: Meal }) {
     if (busy || done) return
     const problem = validateMeal({ foodIds: selected, eatenAt: when, amount })
     if (problem) return setError(problem)
+    if (!mealType) return setError('Odaberite vrstu obroka.')
     if (!online) return setError('Za spremanje je potrebna internet veza.')
     setBusy(true); setError(null)
     const { error } = await supabase.rpc('save_meal', {
       p_meal_id: mealId, p_eaten_at: when.toISOString(), p_preference: pref, p_notes: notes,
-      p_portion_amount: amount ? Number(amount) : null, p_portion_unit: amount ? unit : null, p_food_ids: selected,
+      p_portion_amount: amount ? Number(amount) : null, p_portion_unit: amount ? unit : null, p_food_ids: selected, p_meal_type: mealType,
     })
     if (error) { setBusy(false); return setError(errText(error)) }
     await reload(); setDone(true)
@@ -66,6 +68,15 @@ function Form({ meal }: { meal?: Meal }) {
       </section>
       <FoodPicker selected={selected} onToggle={(fid) => setSelected(toggleFood(selected, fid))} />
       <section className={`${card} space-y-4`}>
+        <fieldset>
+          <legend className="mb-1 font-bold">Vrsta obroka</legend>
+          <div className="grid grid-cols-3 gap-2">
+            {MEAL_TYPES.map((t) => (
+              <button key={t} type="button" aria-pressed={mealType === t} onClick={() => setMealType(t)}
+                className={`min-h-12 rounded-2xl text-sm font-extrabold tracking-wide ${mealType === t ? 'bg-sagedeep text-white' : 'bg-cream'}`}>{MEAL_TYPE_LABEL[t]}</button>
+            ))}
+          </div>
+        </fieldset>
         <div>
           <label className="mb-1 flex items-center gap-2 font-bold" htmlFor="vrijeme"><Clock size={18} aria-hidden />Vrijeme obroka: {Number.isNaN(when.getTime()) ? '—' : whenLabel(when.toISOString())}</label>
           <input id="vrijeme" type="datetime-local" className={input} value={eatenAt} onChange={(e) => setEatenAt(e.target.value)} />
