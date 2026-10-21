@@ -1,0 +1,11 @@
+# Lista za objavu
+- [ ] Supabase projekat napravljen
+- [ ] 001_schema.sql pokrenut bez grešaka
+- [ ] 002_seed_foods.sql pokrenut (96 namirnica)
+- [ ] URL + anon ključ u `.env` (lokalno) i u GitHub secrets
+- [ ] Lokalno `npm run dev` radi; registracija i obrok se spremaju
+- [ ] Repozitorij na GitHubu, Pages izvor = GitHub Actions
+- [ ] Workflow zelen, javni URL se otvara
+- [ ] Supabase Site URL + Redirect URLs postavljeni
+- [ ] Test s dva računa (RLS)
+- [ ] PWA instalirana na telefon
